@@ -2,7 +2,7 @@
 
 #include <gtest.h>
 
-TEST(TBitField, can_create_bitfield_with_positive_length) {
+TEST(DoublyLinkedList, just_an_empty_test) {
 
 	EXPECT_EQ(1, 1);
 
