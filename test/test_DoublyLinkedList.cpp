@@ -2,7 +2,7 @@
 
 #include <gtest.h>
 
-// Создание
+// creating
 TEST(DoublyLinkedList, can_create_an_empty_list) {
     ASSERT_NO_THROW(List<int> list);
 }
@@ -22,7 +22,7 @@ TEST(DoublyLinkedList, cant_create_a_list_with_negative_size) {
     ASSERT_ANY_THROW(List<int> list(-4, 0));
 }
 
-// Конструктор копирования
+// copy constructor
 TEST(DoublyLinkedList, can_use_the_copy_constructor) {
     List<int> list(5, 0);
     ASSERT_NO_THROW(List<int> copy(list));
@@ -68,7 +68,7 @@ TEST(DoublyLinkedList, can_copy_the_empty_list) {
     EXPECT_TRUE(copy.empty());
 }
 
-// Конструктор перемещения
+// move constructor
 TEST(DoublyLinkedList, can_used_move_constructor) {
     List<int> list;
     for (int i = 0; i < 5; i++) {
@@ -92,7 +92,7 @@ TEST(DoublyLinkedList, move_constructor_is_correct) {
     }
 }
 
-// Оператор присваивания
+// copy operator
 TEST(DoublyLinkedList, copy_assignment_operator_is_correct) {
     List<int> list;
     for (int i = 0; i < 3; i++) {
@@ -120,7 +120,7 @@ TEST(DoublyLinkedList, copy_assignment_operator_self_assignment) {
     EXPECT_EQ(list[1], 2);
 }
 
-// Оператор перемещения
+// move operator
 TEST(DoublyLinkedList, move_assignment_operator_is_correct) {
     List<int> list;
     for (int i = 0; i < 3; i++) {
@@ -150,7 +150,7 @@ TEST(DoublyLinkedList, can_move_list_to_itself) {
     }
 }
 
-// Итераторы
+// iterators
 TEST(DoublyLinkedList, begin_and_end_iterators) {
     List<int> list;
     for (int i = 0; i < 5; i++) {
@@ -192,7 +192,31 @@ TEST(DoublyLinkedList, iterator_after_the_end) {
     EXPECT_EQ(it, list.begin());
 }
 
-// front и back
+TEST(DoublyLinkedList, addition_operator_of_iterator) {
+    List<int> list;
+    for (int i = 0; i < 3; i++) {
+        list.push_back(i);
+    }
+
+    for (int i = 0; i < 3; i++) {
+        EXPECT_EQ(i, *(list.begin() + i));
+    }
+    ASSERT_ANY_THROW(*(list.begin() + 3));
+}
+
+TEST(DoublyLinkedList, substraction_operator_of_iterator) {
+    List<int> list;
+    for (int i = 0; i < 3; i++) {
+        list.push_back(i);
+    }
+
+    for (int i = 1; i <= 3; i++) {
+        EXPECT_EQ(3 - i, *(list.end() - i));
+    }
+    ASSERT_ANY_THROW(*(list.end() - 0));
+}
+
+// .front() and .back()
 TEST(DoublyLinkedList, front_and_back_non_empty) {
     List<int> list;
     list.push_back(20);
@@ -233,7 +257,7 @@ TEST(DoublyLinkedList, back_empty) {
     EXPECT_ANY_THROW(list.back());
 }
 
-// insert
+// .insert
 TEST(DoublyLinkedList, insert_after) {
     List<int> list;
 
@@ -280,7 +304,7 @@ TEST(DoublyLinkedList, insert_before_after_empty_list) {
     EXPECT_EQ(*(++list.begin()), 10);
 }
 
-// erase
+// .erase
 TEST(DoublyLinkedList, pop_front) {
     List<int> list;
 
@@ -355,7 +379,7 @@ TEST(DoublyLinkedList, cant_erase_end_iterator) {
     ASSERT_ANY_THROW(list.erase(list.end()));
 }
 
-// []
+// operator[]
 
 TEST(DoublyLinkedList, push_front_and_access) {
     List<int> list;
@@ -391,5 +415,6 @@ TEST(DoublyLinkedList, access_out_of_bounds) {
 
     ASSERT_ANY_THROW(list[2]);
 }
+
 
 

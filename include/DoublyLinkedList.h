@@ -18,13 +18,12 @@ private:
         }
     };
 
-    size_t sz = 0;
+    int sz = 0;
     Node* head = nullptr;
     // head->next the first element of this list
     // head->prev the last element of this list
 
 public:
-
     class Iterator {
         friend class List;
     private:
@@ -36,14 +35,14 @@ public:
 
         ListType& operator*() const {
             if (curr_node->is_head) {
-                throw std::out_of_range("It is not allowed to dereference the .end() iterator");
+                throw std::out_of_range("It is not allowed to dereference the .end() iterator!");
             }
             return curr_node->value;
         }
 
         ListType* operator->() const {
             if (curr_node->is_head) {
-                throw std::out_of_range("It is not allowed to dereference the .end() iterator");
+                throw std::out_of_range("It is not allowed to dereference the .end() iterator!");
             }
             return &(curr_node->value)
         }
@@ -54,6 +53,22 @@ public:
 
         bool operator!=(const Iterator& other) const {
             return this->curr_node != other.curr_node;
+        }
+        
+        //It is possible to use shift > sz of the list
+        Iterator operator+(int shift) const{
+            Iterator temp = *this;
+            for (int i = 0; i < shift; ++i) {
+                ++temp;
+            }
+            for (int i = 0; i > shift; --i) {
+                --temp;
+            }
+            return temp;
+        }
+
+        Iterator operator-(int shift) const {
+            return (*this + (-shift));
         }
 
         Iterator& operator++() {
@@ -78,36 +93,29 @@ public:
             return temp;
         }
     };
+
 private:
 
+    void createHead(Node* &node) {
+        node = new Node;
+        node->prev = node;
+        node->next = node;
+        node->is_head = true;
+    }
+
     void destruct() {
-        Node* curr = head->next;
-        while (curr != head) {
-            Node* next = curr->next;
-            delete curr;
-            curr = next;
+        while (begin() != end()) {
+            erase(begin());
         }
         delete head;
         head = nullptr;
     }
 
     void roughCoping(const List& other) {
-        this->head = new Node;
-        this->sz = other.sz;
-
-        Node* other_ptr = other.head->next;
-        Node* this_ptr = this->head;
-
-        while (other_ptr != other.head) {
-            this_ptr->next = new Node(other_ptr->value);
-            this_ptr->next->prev = this_ptr;
-
-            this_ptr = this_ptr->next;
-            other_ptr = other_ptr->next;
+        createHead(this->head);
+        for (const ListType& value: other) {
+            this->push_back(value);
         }
-
-        this_ptr->next = this->head;
-        this->head->prev = this_ptr;
     }
 
     Iterator insert(const ListType& value, Node* prev_node, Node* next_node) {
@@ -126,7 +134,7 @@ private:
 
     Iterator erase(Node* curr_node) {
         if (curr_node->is_head) {
-            throw std::out_of_range("It is not allowed to erase the .end() iterator");
+            throw std::out_of_range("It is not allowed to erase the .end() iterator!");
         }
 
         --sz;
@@ -138,21 +146,18 @@ private:
         next_node->prev = prev_node;
 
         delete curr_node;
-        return next_node;
+        return Iterator(next_node);
     }
 
 public:
 
     List() {
-        head = new Node;
-        head->prev = head;
-        head->next = head;
-        head->is_head = true;
+        createHead(head);
     }
 
     List(int size, const ListType& value): List() {
         if (size < 0) {
-            throw std::logic_error("The size of the list must be non-negative");
+            throw std::logic_error("The size of the list must be non-negative!");
         }
         for (int i = 0; i < size; ++i) {
             push_back(value);
@@ -167,11 +172,7 @@ public:
         this->head = other.head;
         this->sz = other.sz;
 
-        other.head = new Node;
-        other.head->prev = other.head;
-        other.head->next = other.head;
-        other.head->is_head = true;
-
+        createHead(other.head);
         other.sz = 0;
     }
 
@@ -192,9 +193,7 @@ public:
             this->head = other.head;
             this->sz = other.sz;
 
-            other.head = new Node;
-            other.head->prev = other.head;
-            other.head->next = other.head;
+            createHead(other.head);
             other.sz = 0;
         }
         return *this;
@@ -208,29 +207,27 @@ public:
         return sz == 0;
     }
 
-    Iterator begin() {
+    Iterator begin() const {
         return Iterator(head->next);
     }
 
-    Iterator end() {
+    Iterator end() const {
         return Iterator(head);
     }
 
-
     ListType& front() const {
         if (head->next->is_head) {
-            throw std::out_of_range("The list is empty");
+            throw std::out_of_range("The .front() method is called on the empty list!");
         }
         return head->next->value;
     }
 
     ListType& back() const {
         if (head->prev->is_head) {
-            throw std::out_of_range("The list is empty");
+            throw std::out_of_range("The .back() method is called on the empty list!");
         }
         return head->prev->value;
     }
-
 
     Iterator push_front(const ListType& value) {
         return insert(value, head, head->next);
@@ -248,7 +245,6 @@ public:
         return insert(value, next.curr_node->prev, next.curr_node);
     }
 
-
     Iterator pop_front() {
         return erase(Iterator(head->next));
     }
@@ -263,25 +259,15 @@ public:
 
     ListType& operator[](int index) {
         if (index >= sz || index < 0) {
-            throw std::out_of_range("List index out of range");
+            throw std::out_of_range("List index out of range!");
         }
-
-        Node* current = head->next;
-        for (int i = 0; i < index; ++i) {
-            current = current->next;
-        }
-        return current->value;
+        return *(begin() + index);
     }
 
     const ListType& operator[](int index) const {
         if (index >= sz || index < 0) {
-            throw std::out_of_range("List index out of range");
+            throw std::out_of_range("List index out of range!");
         }
-
-        Node* current = head->next;
-        for (int i = 0; i < index; ++i) {
-            current = current->next;
-        }
-        return current->value;
+        return *(begin() + index);
     }
 };
