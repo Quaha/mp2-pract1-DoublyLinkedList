@@ -415,6 +415,3 @@ TEST(DoublyLinkedList, access_out_of_bounds) {
 
     ASSERT_ANY_THROW(list[2]);
 }
-
-
-
